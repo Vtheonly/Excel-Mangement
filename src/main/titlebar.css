@@ -1,0 +1,48 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.title-bar {
+  -webkit-app-region: drag;
+  height: 30px;
+  background-color: #333;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.title-bar-button {
+  -webkit-app-region: no-drag;
+}
+
+.title-bar-controls {
+  display: flex;
+}
+
+.title-bar-button {
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.title-bar-button:hover {
+  background-color: #555;
+}
+
+#close-btn:hover {
+  background-color: #e81123;
+}
+
+.content {
+  padding: 20px;
+}

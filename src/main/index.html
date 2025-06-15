@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Excel Processor</title>
+    <!--  -->
+    <!-- Google Font: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- External libraries for handling Excel files and creating PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+
+    <link rel="stylesheet" href="titlebar.css">
+    <link rel="stylesheet" href="window">
+</head>
+
+<body>
+
+    <!-- Custom Title Bar -->
+    <div class="title-bar">
+        <div class="title-bar-controls">
+            <button id="minimize-btn" class="title-bar-button">-</button>
+            <button id="maximize-btn" class="title-bar-button">▢</button>
+            <button id="close-btn" class="title-bar-button">×</button>
+        </div>
+    </div>
+
+
+
+
+    <!-- Invisible element for screen reader announcements -->
+    <div id="status-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <div class="app-container">
+        <nav>
+            <h1>Excel Processor</h1>
+            <!-- Custom styled file input button -->
+            <label for="file-input" class="btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Load XLSX File
+            </label>
+            <input type="file" id="file-input" accept=".xlsx, .xls">
+        </nav>
+
+        <div class="main-content">
+            <aside class="controls-panel">
+                <!-- This container holds controls that appear after loading a file -->
+                <div id="main-controls" class="hidden">
+                    <section class="control-group" aria-labelledby="sheet-section-heading">
+                        <h2 id="sheet-section-heading">Manage Data</h2>
+                        <label for="sheet-selector">Select a Sheet</label>
+                        <select id="sheet-selector" aria-describedby="sheet-info"></select>
+                        <p id="sheet-info" class="sr-only">Displays the sheets available in the loaded Excel file.</p>
+                    </section>
+
+                    <section class="control-group" aria-labelledby="replace-section-heading">
+                        <h2 id="replace-section-heading">Search & Replace</h2>
+                        <label for="find-input">Find what:</label>
+                        <input type="text" id="find-input" placeholder="Text to search for">
+
+                        <label for="replace-input">Replace with:</label>
+                        <input type="text" id="replace-input" placeholder="Text to replace with">
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="case-sensitive">
+                            <label for="case-sensitive">Case sensitive</label>
+                        </div>
+
+                        <button id="replace-button" class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                            Replace All
+                        </button>
+                    </section>
+
+                    <section class="control-group" aria-labelledby="export-section-heading">
+                        <h2 id="export-section-heading">Export</h2>
+                        <button id="export-pdf-button" class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="12"></line>
+                                <polyline points="9 15 12 12 15 15"></polyline>
+                            </svg>
+                            Export as PDF
+                        </button>
+                    </section>
+                </div>
+
+                <section class="control-group" aria-labelledby="history-section-heading">
+                    <h2 id="history-section-heading">Action History</h2>
+                    <ul id="history-list" aria-label="List of actions performed">
+                        <!-- History items will be added here by JavaScript -->
+                    </ul>
+                </section>
+            </aside>
+
+            <main id="table-container" role="region" aria-label="Data Table Display" tabindex="0">
+                <p>Load an Excel file using the button in the top-right corner to begin.</p>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // This JavaScript code is identical to the previous version.
+        // It works perfectly with the new HTML structure and CSS because the element IDs are the same.
+        // No changes are needed here.
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const fileInput = document.getElementById('file-input');
+            const mainControls = document.getElementById('main-controls');
+            const sheetSelector = document.getElementById('sheet-selector');
+            const tableContainer = document.getElementById('table-container');
+            const findInput = document.getElementById('find-input');
+            const replaceInput = document.getElementById('replace-input');
+            const caseSensitiveCheckbox = document.getElementById('case-sensitive');
+            const replaceButton = document.getElementById('replace-button');
+            const exportPdfButton = document.getElementById('export-pdf-button');
+            const historyList = document.getElementById('history-list');
+            const statusAnnouncer = document.getElementById('status-announcer');
+
+            // --- State Variables ---
+            let workbook = null;
+            let currentSheetName = '';
+            let currentSheetData = [];
+            let currentHeaders = [];
+
+            // --- Utility Functions ---
+            const announce = (message) => {
+                statusAnnouncer.textContent = message;
+            };
+
+            const addToHistory = (text) => {
+                const li = document.createElement('li');
+                const timestamp = new Date().toLocaleTimeString();
+                li.textContent = `[${timestamp}] ${text}`;
+                historyList.prepend(li);
+            };
+
+            const setControlsDisabled = (disabledState) => {
+                replaceButton.disabled = disabledState;
+                exportPdfButton.disabled = disabledState;
+                sheetSelector.disabled = disabledState;
+            };
+
+            setControlsDisabled(true); // Initially disabled
+
+            // --- Core Functions ---
+            const handleFileSelect = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        workbook = XLSX.read(data, { type: 'array' });
+
+                        populateSheetSelector();
+                        mainControls.classList.remove('hidden');
+                        setControlsDisabled(false);
+                        const message = `File "${file.name}" loaded successfully with ${workbook.SheetNames.length} sheets.`;
+                        announce(message);
+                        addToHistory(message);
+
+                    } catch (err) {
+                        const errorMessage = `Error reading file: ${err.message}`;
+                        console.error(errorMessage, err);
+                        announce(errorMessage);
+                        addToHistory(errorMessage);
+                        tableContainer.innerHTML = `<p style="color: #f44336;">${errorMessage}</p>`;
+                    }
+                };
+                reader.onerror = (err) => {
+                    const errorMessage = `File could not be read. Error: ${err}`;
+                    console.error(errorMessage);
+                    announce(errorMessage);
+                    addToHistory(errorMessage);
+                };
+                reader.readAsArrayBuffer(file);
+            };
+
+            const populateSheetSelector = () => {
+                sheetSelector.innerHTML = '';
+                workbook.SheetNames.forEach(sheetName => {
+                    const option = document.createElement('option');
+                    option.value = sheetName;
+                    option.textContent = sheetName;
+                    sheetSelector.appendChild(option);
+                });
+                handleSheetSelect();
+            };
+
+            const handleSheetSelect = () => {
+                currentSheetName = sheetSelector.value;
+                if (!currentSheetName || !workbook) return;
+
+                const worksheet = workbook.Sheets[currentSheetName];
+                const dataAsArray = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+
+                if (dataAsArray.length === 0) {
+                    currentHeaders = [];
+                    currentSheetData = [];
+                    renderTable();
+                    const message = `Sheet "${currentSheetName}" is empty.`;
+                    announce(message);
+                    addToHistory(message);
+                    return;
+                }
+
+                currentHeaders = dataAsArray[0];
+                currentSheetData = dataAsArray.slice(1);
+
+                renderTable();
+                const message = `Displaying sheet "${currentSheetName}" with ${currentHeaders.length} columns and ${currentSheetData.length} rows.`;
+                announce(message);
+                addToHistory(message);
+            };
+
+            const renderTable = () => {
+                if (currentHeaders.length === 0 && currentSheetData.length === 0) {
+                    tableContainer.innerHTML = `<p>The selected sheet "${currentSheetName}" appears to be empty.</p>`;
+                    return;
+                }
+
+                const table = document.createElement('table');
+
+                const thead = table.createTHead();
+                const headerRow = thead.insertRow();
+                currentHeaders.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.scope = 'col';
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
+
+                const tbody = table.createTBody();
+                currentSheetData.forEach(rowData => {
+                    const row = tbody.insertRow();
+                    rowData.forEach(cellData => {
+                        const cell = row.insertCell();
+                        cell.textContent = cellData;
+                    });
+                });
+
+                tableContainer.innerHTML = '';
+                tableContainer.appendChild(table);
+            };
+
+            const handleReplace = () => {
+                const findValue = findInput.value;
+                const replaceValue = replaceInput.value;
+                const isCaseSensitive = caseSensitiveCheckbox.checked;
+
+                if (!findValue) {
+                    announce("Please enter a value to find.");
+                    return;
+                }
+
+                let replacementCount = 0;
+                const flags = isCaseSensitive ? 'g' : 'gi';
+                const findRegex = new RegExp(findValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), flags);
+
+                const newData = currentSheetData.map(row => {
+                    return row.map(cell => {
+                        let cellString = String(cell);
+                        if (cellString.match(findRegex)) {
+                            const originalCell = cellString;
+                            cellString = cellString.replace(findRegex, replaceValue);
+                            if (originalCell !== cellString) {
+                                replacementCount++;
+                            }
+                        }
+                        return cellString;
+                    });
+                });
+
+                currentSheetData = newData;
+                renderTable();
+
+                const message = `Replaced ${replacementCount} instance(s) of "${findValue}" with "${replaceValue}" on sheet "${currentSheetName}".`;
+                announce(message);
+                addToHistory(message);
+            };
+
+            const handleExportPdf = () => {
+                if (currentSheetData.length === 0) {
+                    announce("Cannot export an empty sheet.");
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape' });
+
+                const exportMessage = "Generating PDF...";
+                announce(exportMessage);
+                addToHistory(exportMessage);
+
+                doc.autoTable({
+                    head: [currentHeaders],
+                    body: currentSheetData,
+                    startY: 20,
+                    theme: 'grid',
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 2,
+                    },
+                    headStyles: {
+                        fillColor: [0, 188, 212],
+                        textColor: 255
+                    },
+                    margin: { top: 20 }
+                });
+
+                doc.text(`Data from sheet: ${currentSheetName}`, 14, 15);
+                const filename = `export-${currentSheetName.replace(/ /g, '_')}.pdf`;
+                doc.save(filename);
+
+                const successMessage = `Successfully exported data to ${filename}.`;
+                announce(successMessage);
+                addToHistory(successMessage);
+            };
+
+            // --- Event Listeners ---
+            fileInput.addEventListener('change', handleFileSelect);
+            sheetSelector.addEventListener('change', handleSheetSelect);
+            replaceButton.addEventListener('click', handleReplace);
+            exportPdfButton.addEventListener('click', handleExportPdf);
+        });
+    </script>
+</body>
+
+</html>

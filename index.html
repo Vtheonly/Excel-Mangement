@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolt Loader with Progress Bar</title>
+    <style>
+        /* --- Color Palette & Setup --- */
+        :root {
+            --bolt-color-dark: #8c7877;
+            --bolt-color-mid: #a69594;
+            --bolt-color-light: #d1c6c5;
+            --outline-color: #211e1e;
+            --bg-color: #e0e0e0;
+            --progress-bar-bg: #c5c5c5;
+            --progress-bar-fill: #8c7877;
+            --text-color: #333;
+        }
+
+        body {
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* --- Main Loader Container --- */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        /* --- Bolt Element --- */
+        .bolt-loader {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            animation: spin 2s linear infinite;
+        }
+
+        /* --- Bolt Pieces (created with CSS) --- */
+        .bolt-part {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* The "border" is a box-shadow for better compatibility with clip-path */
+            box-shadow: 0 0 0 5px var(--outline-color);
+        }
+
+        /* 1. The Outer Hexagon */
+        .hex-part {
+            background-color: var(--bolt-color-dark);
+            /* This magical line creates a hexagon shape! */
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+            z-index: 1;
+        }
+
+        /* 2. The Inner Circle */
+        .circle-inset {
+            background-color: var(--bolt-color-mid);
+            border-radius: 50%;
+            transform: scale(0.85); /* Make it smaller than the hexagon */
+            z-index: 2;
+        }
+        
+        /* 3. The Phillips Head */
+        .phillips-head {
+            background-color: var(--bolt-color-light);
+            border-radius: 50%;
+            transform: scale(0.7); /* Make it smaller than the inset circle */
+            z-index: 3;
+            /* We'll use pseudo-elements for the cross to keep HTML clean */
+        }
+
+        .phillips-head::before,
+        .phillips-head::after {
+            content: '';
+            position: absolute;
+            background-color: var(--bolt-color-dark);
+            border-radius: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        /* Horizontal bar of the '+' */
+        .phillips-head::before {
+            width: 60%;
+            height: 20%;
+        }
+
+        /* Vertical bar of the '+' */
+        .phillips-head::after {
+            width: 20%;
+            height: 60%;
+        }
+
+        /* --- Progress Bar --- */
+        .progress-bar {
+            width: 250px;
+            height: 20px;
+            background-color: var(--progress-bar-bg);
+            border-radius: 10px;
+            box-shadow: 0 0 0 5px var(--outline-color);
+            overflow: hidden; /* Important to contain the fill */
+        }
+
+        .progress-bar-fill {
+            width: 0%; /* Starts at 0, controlled by JS */
+            height: 100%;
+            background-color: var(--progress-bar-fill);
+            border-radius: 10px;
+            transition: width 0.4s ease-out; /* Makes the fill look smooth */
+        }
+        
+        #progress-text {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            min-width: 120px; /* Prevents layout shift */
+            text-align: center;
+        }
+        
+        /* --- Animations --- */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* When loading is done, stop spinning */
+        .bolt-loader.is-loaded {
+            animation-play-state: paused;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="loader-container">
+        <!-- The Bolt Loader -->
+        <div class="bolt-loader" id="boltLoader">
+            <div class="bolt-part hex-part"></div>
+            <div class="bolt-part circle-inset"></div>
+            <div class="bolt-part phillips-head"></div>
+        </div>
+
+        <!-- The Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+        
+        <!-- The Text -->
+        <div id="progress-text">Loading...</div>
+    </div>
+
+    <script>
+        // --- JavaScript to control the progress bar and animation ---
+
+        const boltLoader = document.getElementById('boltLoader');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const progressText = document.getElementById('progress-text');
+        
+        let progress = 0;
+        
+        // Simulate loading process
+        const loadingInterval = setInterval(() => {
+            progress += 1;
+            
+            // Update the width of the progress bar
+            progressBarFill.style.width = progress + '%';
+            
+            // Update the text
+            progressText.textContent = progress + '%';
+            
+            // Check if loading is complete
+            if (progress >= 100) {
+                clearInterval(loadingInterval);
+                progressText.textContent = 'Complete!';
+                
+                // Add a class to stop the spinning animation
+                boltLoader.classList.add('is-loaded');
+            }
+        }, 50); // The interval time (in ms) controls the speed of the loading
+
+    </script>
+
+</body>
+</html>

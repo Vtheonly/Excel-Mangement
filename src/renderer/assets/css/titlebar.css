@@ -1,48 +1,38 @@
-body {
-  font-family: sans-serif;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
 .title-bar {
   -webkit-app-region: drag;
-  height: 30px;
-  background-color: #333;
-  color: white;
+  height: 32px;
+  background-color: #202225;
+  color: #a0a0a0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
-}
-
-.title-bar-button {
-  -webkit-app-region: no-drag;
+  padding-left: 12px;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
 .title-bar-controls {
   display: flex;
+  height: 100%;
+  -webkit-app-region: no-drag;
 }
 
 .title-bar-button {
-  width: 30px;
-  height: 30px;
+  width: 46px;
+  height: 100%;
   background: none;
   border: none;
   color: white;
   font-size: 16px;
-  line-height: 30px;
+  line-height: 32px;
   text-align: center;
+  transition: background-color 0.2s ease;
 }
 
 .title-bar-button:hover {
-  background-color: #555;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 #close-btn:hover {
   background-color: #e81123;
-}
-
-.content {
-  padding: 20px;
 }

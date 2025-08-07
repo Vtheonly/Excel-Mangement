@@ -1,13 +1,24 @@
 {
-    "name": "excel-style-app",
-    "version": "1.0.0",
-    "main": "main.js",
-    "scripts": {
-        "start": "ELECTRON_DISABLE_SANDBOX=1 electron ."
-    },
-    "dependencies": {
-        "chart.js": "^4.5.0",
-        "electron": "^30.0.0",
-        "exceljs": "^4.4.0"
-    }
+  "name": "sheetwise",
+  "version": "1.0.0",
+  "description": "An intelligent Excel processor for data analysis and visualization.",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron . --no-sandbox"
+  },
+  "keywords": [
+    "Excel",
+    "Electron",
+    "Charts",
+    "Statistics"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "chart.js": "^4.4.2",
+    "electron": "^30.0.2",
+    "exceljs": "^4.4.0",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2"
+  }
 }

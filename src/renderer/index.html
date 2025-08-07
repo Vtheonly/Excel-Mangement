@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://cdn.jsdelivr.net;">
+    <title>SheetWise</title>
+    <link rel="stylesheet" href="assets/css/titlebar.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+
+    <div class="title-bar">
+        <div class="title-bar-text">SheetWise</div>
+        <div class="title-bar-controls">
+            <button id="minimize-btn" class="title-bar-button">-</button>
+            <button id="maximize-btn" class="title-bar-button">▢</button>
+            <button id="close-btn" class="title-bar-button">×</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <aside class="controls-panel">
+            <section class="control-group">
+                <button id="load-file-btn" class="btn">Load XLSX File</button>
+                <div id="file-info" class="file-info-text">No file loaded.</div>
+            </section>
+
+            <section class="control-group">
+                <h2>Statistics</h2>
+                <label for="column-select">Analyze Column:</label>
+                <select id="column-select" class="control-input"></select>
+
+                <div class="stats-display" id="numeric-stats-display" style="display: none;">
+                    <!-- Numerical stats will be inserted here -->
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="main-chart"></canvas>
+                </div>
+                <div class="chart-controls">
+                    <label>Chart Type:</label>
+                    <button id="bar-chart-btn" class="btn-sm active">Bar</button>
+                    <button id="pie-chart-btn" class="btn-sm">Pie</button>
+                </div>
+            </section>
+
+            <section class="control-group">
+                <h2>Actions</h2>
+                <button id="export-pdf-btn" class="btn">Export Table to PDF</button>
+            </section>
+
+            <section class="control-group">
+                <h2>Action History</h2>
+                <ul id="history-list">
+                    <li>App Initialized.</li>
+                </ul>
+            </section>
+        </aside>
+
+        <main class="content-area" id="table-container" tabindex="0">
+            <div class="placeholder">
+                <p>Click "Load XLSX File" to begin.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./renderer.js"></script>
+</body>
+
+</html>
